@@ -1,0 +1,39 @@
+{
+  "name": "ai-readiness-product",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "AUTH_MODE=email_otp concurrently -n api,web -c green,blue \"npm run dev -w @ai-readiness/api\" \"npm run dev -w @ai-readiness/web\"",
+    "dev:api": "AUTH_MODE=email_otp npm run dev -w @ai-readiness/api",
+    "dev:web": "npm run dev -w @ai-readiness/web",
+    "build": "npm run build --workspaces --if-present",
+    "test": "vitest run",
+    "test:e2e": "node scripts/run-e2e.mjs",
+    "test:e2e:email": "node scripts/run-email-e2e.mjs",
+    "test:dependencies": "tsx scripts/verify-production-dependencies.ts",
+    "test:watch": "vitest",
+    "typecheck": "tsc -b --pretty false",
+    "check": "npm run typecheck && npm run test && npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "concurrently": "latest",
+    "tsx": "latest",
+    "typescript": "latest",
+    "vitest": "latest"
+  },
+  "overrides": {
+    "esbuild": "0.28.2"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1"
+  }
+}
