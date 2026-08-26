@@ -1,0 +1,21 @@
+{
+  "name": "@ai-readiness/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@ai-readiness/application": "0.1.0",
+    "@ai-readiness/contracts": "0.1.0",
+    "@ai-readiness/database": "0.1.0",
+    "@ai-readiness/domain": "0.1.0",
+    "@ai-readiness/reporting": "0.1.0",
+    "bullmq": "latest",
+    "ioredis": "latest"
+  },
+  "devDependencies": {}
+}
