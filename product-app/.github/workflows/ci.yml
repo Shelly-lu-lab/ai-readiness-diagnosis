@@ -1,0 +1,60 @@
+name: AI readiness product CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: ai_readiness
+          POSTGRES_USER: ai_readiness
+          POSTGRES_PASSWORD: ci_only_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ai_readiness"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+    env:
+      DATABASE_URL: postgresql://ai_readiness:ci_only_password@127.0.0.1:5432/ai_readiness
+      REDIS_URL: redis://127.0.0.1:6379
+      OBJECT_STORAGE_ENDPOINT: http://127.0.0.1:9000
+      OBJECT_STORAGE_BUCKET: ai-readiness-ci
+      OBJECT_STORAGE_ACCESS_KEY: ci_minio
+      OBJECT_STORAGE_SECRET_KEY: ci_minio_password
+      OBJECT_STORAGE_REGION: us-east-1
+      OBJECT_STORAGE_FORCE_PATH_STYLE: "true"
+      OBJECT_STORAGE_SSE: none
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - name: Start MinIO
+        run: >-
+          docker run -d --name ai-readiness-minio -p 9000:9000
+          -e MINIO_ROOT_USER=ci_minio
+          -e MINIO_ROOT_PASSWORD=ci_minio_password
+          minio/minio:latest server /data --address :9000
+      - run: npm run test:dependencies
+      - name: Install Chromium runtime
+        run: npx playwright-core install --with-deps chromium
+      - run: npm run test:e2e
+      - name: Build production images
+        run: |
+          docker build --target api -t ai-readiness-api:ci .
+          docker build --target worker -t ai-readiness-worker:ci .
+          docker build --target web -t ai-readiness-web:ci .

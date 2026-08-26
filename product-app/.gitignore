@@ -1,0 +1,15 @@
+node_modules/
+.venv/
+dist/
+.vite/
+coverage/
+.env
+.pglite/
+:memory:/
+.env.local
+.data/
+test-results/
+playwright-report/
+tmp/
+*.log
+*.tsbuildinfo

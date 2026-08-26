@@ -1,1 +1,9 @@
-node_modules/\n.env\n
+node_modules
+**/dist
+.data
+.venv
+test-results
+playwright-report
+.git
+.env
+*.log
