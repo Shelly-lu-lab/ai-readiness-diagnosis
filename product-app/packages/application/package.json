@@ -1,0 +1,22 @@
+{
+  "name": "@ai-readiness/application",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "development": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@ai-readiness/contracts": "0.1.0",
+    "@ai-readiness/database": "0.1.0",
+    "@ai-readiness/domain": "0.1.0",
+    "@ai-readiness/reporting": "0.1.0"
+  }
+}
