@@ -12,6 +12,7 @@
     "dev:api": "AUTH_MODE=email_otp npm run dev -w @ai-readiness/api",
     "dev:web": "npm run dev -w @ai-readiness/web",
     "build": "npm run build --workspaces --if-present",
+    "start:hosted": "node scripts/start-hosted.mjs",
     "test": "vitest run",
     "test:e2e": "node scripts/run-e2e.mjs",
     "test:e2e:email": "node scripts/run-email-e2e.mjs",
