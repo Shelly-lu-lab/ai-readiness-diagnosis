@@ -13,3 +13,4 @@ playwright-report/
 tmp/
 *.log
 *.tsbuildinfo
+.vercel
