@@ -5,10 +5,6 @@ const requiredProductionKeys = [
   "DATA_LINK_SECRET",
   "INVITE_SECRET",
   "WEB_ORIGIN",
-  "OBJECT_STORAGE_ENDPOINT",
-  "OBJECT_STORAGE_BUCKET",
-  "OBJECT_STORAGE_ACCESS_KEY",
-  "OBJECT_STORAGE_SECRET_KEY",
   "INTERNAL_WORKER_SECRET",
 ] as const;
 
@@ -34,6 +30,21 @@ export function validateProductionConfig(environment: NodeJS.ProcessEnv): void {
   );
   if (missing.length)
     throw new Error(`MISSING_PRODUCTION_CONFIG:${missing.join(",")}`);
+  const ephemeralArtifactStorage =
+    environment.ALLOW_EPHEMERAL_ARTIFACT_STORAGE === "true";
+  const objectStorageKeys = [
+    "OBJECT_STORAGE_ENDPOINT",
+    "OBJECT_STORAGE_BUCKET",
+    "OBJECT_STORAGE_ACCESS_KEY",
+    "OBJECT_STORAGE_SECRET_KEY",
+  ] as const;
+  const missingObjectStorage = objectStorageKeys.filter(
+    (key) => !environment[key],
+  );
+  if (missingObjectStorage.length && !ephemeralArtifactStorage)
+    throw new Error(
+      `MISSING_PRODUCTION_CONFIG:${missingObjectStorage.join(",")}`,
+    );
   if ((environment.SESSION_SECRET?.length ?? 0) < 32)
     throw new Error("SESSION_SECRET_TOO_SHORT");
   if ((environment.INTERNAL_WORKER_SECRET?.length ?? 0) < 32)
@@ -92,6 +103,9 @@ export function validateProductionConfig(environment: NodeJS.ProcessEnv): void {
   ) {
     throw new Error("EMAIL_API_CONFIGURATION_INCOMPLETE");
   }
-  if (!environment.OBJECT_STORAGE_ENDPOINT?.startsWith("https://"))
+  if (
+    !ephemeralArtifactStorage &&
+    !environment.OBJECT_STORAGE_ENDPOINT?.startsWith("https://")
+  )
     throw new Error("OBJECT_STORAGE_ENDPOINT_MUST_USE_HTTPS");
 }
