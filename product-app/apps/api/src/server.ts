@@ -5,7 +5,7 @@ import { validateProductionConfig } from "./config.js";
 validateProductionConfig(process.env);
 const db = await createSqlClient();
 const app = await buildApp(db);
-const port = Number(process.env.API_PORT ?? 4310);
+const port = Number(process.env.PORT ?? process.env.API_PORT ?? 4310);
 
 await app.listen({ port, host: process.env.API_HOST ?? "127.0.0.1" });
 const shutdown = async () => {
