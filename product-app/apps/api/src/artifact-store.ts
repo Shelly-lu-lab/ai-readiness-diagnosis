@@ -92,7 +92,10 @@ export function createArtifactStore(): ArtifactStore {
   const secretKey = process.env.OBJECT_STORAGE_SECRET_KEY;
   if (endpoint && bucket && accessKey && secretKey)
     return new S3ArtifactStore(endpoint, bucket, accessKey, secretKey);
-  if (process.env.NODE_ENV === "production")
+  if (
+    process.env.NODE_ENV === "production" &&
+    process.env.ALLOW_EPHEMERAL_ARTIFACT_STORAGE !== "true"
+  )
     throw new Error("OBJECT_STORAGE_CONFIGURATION_REQUIRED");
   return new LocalArtifactStore(
     resolve(
