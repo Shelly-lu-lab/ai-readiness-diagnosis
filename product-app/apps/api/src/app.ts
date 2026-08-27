@@ -403,7 +403,17 @@ export async function buildApp(
       report.id,
       report.contentHash,
     );
-    if (existing) return artifactStore.get(existing.storageKey);
+    if (existing) {
+      try {
+        return await artifactStore.get(existing.storageKey);
+      } catch (error) {
+        if (process.env.ALLOW_EPHEMERAL_ARTIFACT_STORAGE !== "true") throw error;
+        app.log.warn(
+          { reportId: report.id },
+          "cached report artifact missing; rebuilding from frozen snapshot",
+        );
+      }
+    }
     const renderToken = signReportRenderToken(
       { reportId: report.id, contentHash: report.contentHash },
       secret,
