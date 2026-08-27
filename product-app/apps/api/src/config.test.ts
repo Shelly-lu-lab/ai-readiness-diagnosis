@@ -72,6 +72,24 @@ describe("production configuration gate", () => {
         OBJECT_STORAGE_SECRET_KEY: "secret",
       }),
     ).not.toThrow());
+  it("allows explicit ephemeral artifact storage for a public MVP", () =>
+    expect(() =>
+      validateProductionConfig({
+        NODE_ENV: "production",
+        AUTH_MODE: "email_otp",
+        DATABASE_URL: "postgresql://db/app",
+        REDIS_URL: "redis://cache:6379",
+        SESSION_SECRET: "s".repeat(32),
+        DATA_LINK_SECRET: "d".repeat(32),
+        INVITE_SECRET: "i".repeat(32),
+        INTERNAL_WORKER_SECRET: "w".repeat(32),
+        WEB_ORIGIN: "https://app.example",
+        EMAIL_PROVIDER: "brevo",
+        BREVO_API_KEY: "xkeysib-valid",
+        EMAIL_FROM: "AI 组织转型诊断 <sender@example.com>",
+        ALLOW_EPHEMERAL_ARTIFACT_STORAGE: "true",
+      }),
+    ).not.toThrow());
   it("accepts a named Resend sender and requires its API key", () => {
     const complete = {
       NODE_ENV: "production",
