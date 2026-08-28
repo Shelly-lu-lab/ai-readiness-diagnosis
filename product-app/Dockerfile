@@ -4,6 +4,10 @@ COPY package.json package-lock.json tsconfig.base.json ./
 COPY apps ./apps
 COPY packages ./packages
 RUN npm ci
+# A clean container has no prebuilt workspace outputs. Build the TypeScript
+# project-reference graph first so workspace packages compile in dependency
+# order before the per-workspace production build runs.
+RUN npm run typecheck
 RUN npm run build
 
 FROM node:22-alpine AS api
