@@ -3,6 +3,7 @@ WORKDIR /app
 COPY package.json package-lock.json tsconfig.json tsconfig.base.json ./
 COPY apps ./apps
 COPY packages ./packages
+COPY scripts ./scripts
 RUN npm ci
 # A clean container has no prebuilt workspace outputs. Build the TypeScript
 # project-reference graph first so workspace packages compile in dependency
