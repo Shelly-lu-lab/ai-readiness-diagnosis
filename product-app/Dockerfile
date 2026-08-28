@@ -29,12 +29,14 @@ COPY --from=build /app/packages ./packages
 USER node
 CMD ["node", "apps/worker/dist/index.js"]
 
-FROM api AS hosted
-COPY --from=build /app/apps/worker ./apps/worker
-COPY --from=build /app/scripts ./scripts
-CMD ["node", "scripts/start-hosted.mjs"]
-
 FROM nginx:1.27-alpine AS web
 COPY infra/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/apps/web/dist /usr/share/nginx/html
 EXPOSE 8080
+
+# Keep the combined API + Worker image as the final stage so hosts that do not
+# expose Docker target selection build the correct runtime by default.
+FROM api AS hosted
+COPY --from=build /app/apps/worker ./apps/worker
+COPY --from=build /app/scripts ./scripts
+CMD ["node", "scripts/start-hosted.mjs"]
